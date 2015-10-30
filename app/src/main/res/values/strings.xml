@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">checkIntentsAndFileSharing</string>
+    <string name="cal_intent_button">send calculator intent</string>
+    <string name="chrome_intent_button">send chrome intent</string>
+    <string name="file_share_intent_button">send file share intent</string>
+</resources>
