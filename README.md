@@ -11,3 +11,4 @@ and then install this app to check the itents
 To check the file sharing using content uris install the serverapp https://github.com/ktv205/serverapp
 
 Note: First install Basic profile manager app http://developer.android.com/samples/BasicManagedProfile/index.html
+Note: I have logs through out the app for info on how the app is working
