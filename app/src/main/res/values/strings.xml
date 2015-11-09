@@ -3,4 +3,7 @@
     <string name="cal_intent_button">send calculator intent</string>
     <string name="chrome_intent_button">send chrome intent</string>
     <string name="file_share_intent_button">send file share intent</string>
+    <string name="text_intent_button">Share simple text</string>
+    <string name="choose_apps">choose an app to share content</string>
+    <string name="ok">OK</string>
 </resources>

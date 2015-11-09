@@ -1,12 +1,17 @@
 package com.example.tejavelagapudi.checkintentsandfilesharing;
 
+import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.LabeledIntent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +25,16 @@ import com.example.tejavelagapudi.checkintentsandfilesharing.databinding.Activit
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ChooserDialogFragment.ActivitiesSelectedListener {
     private Intent mRequestFileIntent;
+    List<ResolveInfo> mResInfo;
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewDataBinding mActivityMainBinding;
+    Intent mSendIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,5 +129,50 @@ public class MainActivity extends AppCompatActivity {
             ImageView imageView = (ImageView) findViewById(R.id.image_view);
             imageView.setImageURI(returnUri);
         }
+    }
+
+    public void onTextButtonClicked(View view) {
+        mSendIntent = new Intent();
+        mSendIntent.setAction(Intent.ACTION_SEND);
+        mSendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+        mSendIntent.setType("text/plain");
+        PackageManager pm = getPackageManager();
+        mResInfo = pm.queryIntentActivities(mSendIntent, 0);
+        ArrayList<String> activities = new ArrayList<>();
+        Log.d(TAG, "Intent activities size->" + mResInfo.size());
+        for (int i = 0; i < mResInfo.size(); i++) {
+            Log.d(TAG, "activity->" + mResInfo.get(i).activityInfo.toString());
+            activities.add(mResInfo.get(i).activityInfo.packageName);
+        }
+
+        startChooserDialog(activities);
+
+
+    }
+
+    private void startChooserDialog(ArrayList<String> activities) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        ChooserDialogFragment chooserDialogFragment = ChooserDialogFragment.newInstance(activities);
+        chooserDialogFragment.show(transaction, "dialog");
+
+    }
+
+    @Override
+    public void onActivitiesSelected(ArrayList<String> selectedActivities) {
+        Log.d(TAG, "choosenActivitiesSize->" + selectedActivities.size());
+        List<Intent> intents=new ArrayList<>();
+        for (int i = 0; i < selectedActivities.size(); i++) {
+            Intent intent = new Intent();
+            intent.setPackage(selectedActivities.get(i));
+            intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+            intent.setType("text/plain");
+            intents.add(intent);
+        }
+        Intent chooserIntent=Intent.createChooser(intents.remove(0),getString(R.string.choose_apps));
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,intents.toArray(new Parcelable[]{}));
+        startActivity(chooserIntent);
+
+
     }
 }
